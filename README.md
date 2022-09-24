@@ -1,2 +1,6 @@
-# frontalsing
-Oscar module to study frontal singularities
+# Oscarlibs
+[Oscar](https://oscar.computeralgebra.de) modules
+
+## Goals
+- [ ] Port the libraries from [this repository](https://github.com/cuspidalcoffee/Singular)
+- [ ] Create an interface to display results
