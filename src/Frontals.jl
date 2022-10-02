@@ -1,4 +1,8 @@
 module Frontals
+using Oscar
+
+# Functions that are meant to be accessible to the user should be loaded with "export"
+export normal
 
 #=
 https://docs.julialang.org/en/v1/stdlib/Markdown/#markdown_stdlib
@@ -10,27 +14,33 @@ https://oscar-system.github.io/Oscar.jl/stable/AbstractAlgebra/ytabs/#Partition
 
 =#
 
-using Oscar
-
-# Untested!
-function jacob(I::Vector{fmpz_mpoly})
-    # https://docs.julialang.org/en/v1/manual/functions/#Argument-type-declarations
-    
-    
+# check if the map is frontal and obtain the normal if it is
+function jacobian(I::Vector{fmpz_mpoly})
     R = parent(I[1])
-    n,p = length(gens(R)), length(I)
-    
-    MR = MatrixSpace(R, n, p)
-    JI = zero(MR)
+    n, p = length(gens(R)), length(I)
+
+    MR = MatrixSpace(R, p, n)
+    JM = zero(MR)
     
     for i = 1:p
         for j = 1:n
-            JI[i,j] = derivative(I[i], R[j])
+            JM[i,j] = derivative(I[i], R[j])
         end
     end
+
+    Jminors = minors(JM, min(n,p))
+    Jgens = gens(ideal(R, Jminors))
+
+    if length(Jgens) > 1
+        return 0
+    else
+        return 1
+    end
     
-    return ideal(R, minors(J, min(n,p)))
-    # https://oscar-system.github.io/Oscar.jl/stable/AbstractAlgebra/matrix/#minors-Tuple%7BMatElem,%20Int64%7D
+        if p = n + 1
+            normal = reverse!(Jminors./Jgens[1])
+        end
+    end
 end
 
 
@@ -42,7 +52,6 @@ end
 	=#
 	
 
-    function prenormal(f)
     #=============================================================================
     static proc c1fsurf (map f)
     {
@@ -88,11 +97,6 @@ end
             return(xy[1], f[3], f[2], xy[2], vdim(std(S)));
         }
     }
-    ============================================================================#
-    end
-
-    function dpscheme
-    #=========================================================================
         static proc dp_scheme(poly p, poly q, poly y)
 {
     // add an auxiliar variable for divided differences
@@ -134,6 +138,5 @@ end
            milnor(@dpoints));                 // D
 }
         ====#
-    end
-    
+
 end # module
